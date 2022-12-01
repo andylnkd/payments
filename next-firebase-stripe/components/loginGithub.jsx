@@ -1,42 +1,44 @@
-import {getAuth, signInWithGithub, signInWithRedirect, signInWithPopup, GithubAuthProvider} from 'firebase/auth'
+import {
+  getAuth,
+  signInWithGithub,
+  signInWithRedirect,
+  signInWithPopup,
+  GithubAuthProvider,
+} from "firebase/auth";
 
-import { auth, provider } from '../firebase/firebaseClient';
+import { auth, githubAuthProvider } from "../firebase/firebaseClient";
 
-export default function LoginGithub(props){
-
-    const googleHandler = async () => {
-    
-        signInWithRedirect(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            // redux action? --> dispatch({ type: SET_USER, user });
-        })
-        .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
-        });
-    };
-    return (
-      <div className="div">
-        <button onClick={googleHandler}> Sign in with G </button>
-      </div>
-    );
-    
+export default function LoginGithub(props) {
+  const gitHubHandler = async () => {
+    signInWithRedirect(auth, githubAuthProvider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;   
+        // The signed-in user info.
+        const user = result.user;
+        // redux action? --> dispatch({ type: SET_USER, user });
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.email;
+        // The AuthCredential type that was used.
+        const credential = GithubAuthProvider.credentialFromError(error);
+        // ...
+      });
+  };
+  return (
+    <div className="div">
+      <button onClick={gitHubHandler}> Sign in with GitHub </button>
+    </div>
+  );
 }
-    // import firebase from "../firebase/firebaseClient";
-    // import { getFirestore, collection, setDoc} from "firebase/firestore";
-    
-    
+// import firebase from "../firebase/firebaseClient";
+// import { getFirestore, collection, setDoc} from "firebase/firestore";
+
 // export default function Login(props) {
 //   async function signInWithGithub() {
 //     const userCredentials = await firebase
@@ -45,7 +47,6 @@ export default function LoginGithub(props){
 
 //     const db = getFirestore();KK:W
 
-    
 //     await setDoc(doc(db,"users",{
 //         uid: userCredentials.user.uid,
 //         email: userCredentials.user.email,

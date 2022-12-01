@@ -1,42 +1,65 @@
-import {getAuth, signInWithGithub, signInWithRedirect, signInWithPopup, GithubAuthProvider} from 'firebase/auth'
+import {
+  getAuth,
+  signInWithGithub,
+  signInWithRedirect,
+  signInWithPopup,
+  GithubAuthProvider,
+  getRedirectResult,
+  GoogleAuthProvider,
+  getAdditionalUserInfo,
+} from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 
-import { auth, provider } from '../firebase/firebaseClient';
+import { auth, db, googleAuthProvider } from "../firebase/firebaseClient";
 
-export default function LoginGoogle(props){
-
-    const googleHandler = async () => {
-    
-        signInWithRedirect(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            // redux action? --> dispatch({ type: SET_USER, user });
-        })
-        .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
-        });
-    };
-    return (
-      <div className="div">
-        <button onClick={googleHandler}> Sign in with G </button>
-      </div>
-    );
-    
+export default function LoginGoogle(props) {
+  //handler to pass into the button onClick
+  const googleHandler = async () => {
+    // signInWithRedirect(auth, googleAuthProvider);
+    const result = await signInWithPopup(auth, googleAuthProvider);
+    // console.log(result);
+    if (result) {
+      // This is the signed-in user
+      const user = result.user;
+      const dbRef = collection(db, "customers");
+      await addDoc(dbRef, {
+        uid: user.uid,
+        name: user.displayName,
+        authProvider: "Google",
+        email: user.email,
+      });
+    }
+  };
+  return (
+    <div className="div">
+      <button onClick={googleHandler}> Sign in with Google </button>
+    </div>
+  );
 }
-    // import firebase from "../firebase/firebaseClient";
-    // import { getFirestore, collection, setDoc} from "firebase/firestore";
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// The below is all legacy programming from Firebase v8, v9 offers much more modular and clearer and idomatic usage
+// import firebase from "../firebase/firebaseClient";
+// import { getFirestore, collection, setDoc} from "firebase/firestore";
+
 // export default function Login(props) {
 //   async function signInWithGithub() {
 //     const userCredentials = await firebase
@@ -45,7 +68,6 @@ export default function LoginGoogle(props){
 
 //     const db = getFirestore();KK:W
 
-    
 //     await setDoc(doc(db,"users",{
 //         uid: userCredentials.user.uid,
 //         email: userCredentials.user.email,
