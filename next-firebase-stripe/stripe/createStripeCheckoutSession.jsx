@@ -5,15 +5,18 @@ import { onSnapshot, doc } from "firebase/firestore";
 
 export async function createCheckoutSession(uid) {
   const docRef = doc(db, "customers", uid);
-  const customersRef = collection(docRef, "checkoutSessions");
+  const customersRef = collection(docRef, "checkout_sessions");
 
   const checkoutSessionRef = await addDoc(customersRef, {
-    products: "price_0M9zZygJmzQDibAWHcRC3gBX",
-    success_url: "http://localhost:3000/",
-    cancel_url: "http://localhost:3000/",
+    price: "price_0MA3a7gJmzQDibAWfw3X2sHT",
+    success_url: "https://paymentstest1.herokuapp.com/",
+    cancel_url: "https://paymentstest1.herokuapp.com/",
   });
   onSnapshot(checkoutSessionRef, async (snap) => {
-    const { sessionId } = snap.data();
+    
+    const {sessionId}  = snap.data();
+    
+    console.log('entering with '+sessionId)
     if (sessionId) {
       const stripe = await initializeStripe();
       stripe.redirectToCheckout({ sessionId });
